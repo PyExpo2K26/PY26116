@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Load Balancer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-blue-400 mb-2">Energy Load Balancer</h1>
+            <p class="text-slate-400">Real-time home energy management system</p>
+        </header>
+
+        <!-- Power Sources Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Grid Status -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-slate-200">Grid Power</h2>
+                    <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Status:</span>
+                        <span id="grid-status" class="font-semibold text-green-400">Online</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Load:</span>
+                        <span id="grid-load" class="font-semibold">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2 mt-2">
+                        <div id="grid-load-bar" class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battery Status -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-slate-200">Battery</h2>
+                    <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m0 0L5 7m4-4l4 4m8 12h-4m0 0v-4m0 4v-4m0 4h4"></path>
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Charge:</span>
+                        <span id="battery-level" class="font-semibold text-green-400">75%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Status:</span>
+                        <span id="battery-status" class="font-semibold">Charging</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2 mt-2">
+                        <div id="battery-bar" class="bg-green-400 h-2 rounded-full transition-all duration-500" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solar Status -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-slate-200">Solar Panel</h2>
+                    <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Generation:</span>
+                        <span id="solar-power" class="font-semibold text-orange-400">2.5 kW</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Efficiency:</span>
+                        <span id="solar-efficiency" class="font-semibold">85%</span>
+                    </div>
+                    <div class="text-sm text-slate-500 mt-2">Peak: 5.0 kW</div>
+                </div>
+            </div>
+        </div>
