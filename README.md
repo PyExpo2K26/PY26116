@@ -1,72 +1,63 @@
-Energy Load Balancer
-   
-The Smart Energy Balancer Dashboard is a real-time Decision Support System (DSS) designed to manage a household or small-grid energy ecosystem. It acts as an "intelligent brain" that sits between energy sources (Solar, Battery) and energy sinks (Household Demand) to optimize costs, efficiency, and hardware longevity.
+⚡ Smart Energy Load Balancer
 
-Project Overview
+The Smart Energy Balancer is a real-time Decision Support System (DSS) designed to manage a household or small-grid energy ecosystem. It acts as an "intelligent brain" positioned between energy sources (Solar, Battery) and energy sinks (Household Demand) to optimize costs, efficiency, and hardware longevity.
 
-At its core, the program is a Dynamic Resource Allocator. In modern "Green Homes," power management is no longer a one-way street. With fluctuating solar production and finite battery reserves, this program solves the "Who provides power now?" problem.
-By utilizing Hysteresis logic, the system prevents "jitter" (rapid switching), protecting expensive electrical components like inverters and lithium batteries from unnecessary wea 
+🚀 Key Features
 
-1. Intelligent Load Balancing 
-   The system follows 
-    Priority 1: Solar – If solar power is available, it is used first to satisfy house demand.
+1. Intelligent Load Balancing
 
-    Priority 2: Battery – If solar is insufficient, the system checks battery health based on Hysteresis thresholds.
+   The system operates on a hierarchical priority logic to ensure the lowest possible utility cost:
 
-    Priority 3: Grid – The utility grid is treated as a last resort to bridge any remaining energy gap.
+   Priority 1: Solar – Maximum self-consumption. Solar is used first to satisfy demand.
+
+   Priority 2: Battery – Utilized when solar is insufficient, governed by health-conscious hysteresis thresholds.
+
+   Priority 3: Grid – The utility grid acts as a fail-safe to bridge any remaining energy gaps.
 
 2. Hardware Protection (Hysteresis)
 
-   To prevent "chattering" (rapid toggling) when a battery level hovers near a limit, the program implements a buffer zone:
+   To prevent "chattering" (rapid toggling) which degrades inverters and lithium cells, the system implements a "Deadband" buffer:
 
    Engagement Threshold: The battery won't discharge until it reaches 40%.
 
-   Disengagement Threshold: Once active, it stays on until it drops below 35%.
+   Disengagement Threshold: Once active, the battery remains the source until it drops below 35%.
 
-3. Peak Load Monitoring
+3. Peak Load Monitoring & Smoothing
 
-   The system monitors total household demand against a safety threshold (default: $9.0$ kW). If exceeded, a "Peak Mode" warning is triggered, which can be used to shed non-essential loads (e.g., pool heaters) to avoid utility surcharges.
+   Demand Smoothing: Uses a deque (double-ended queue) to create a rolling average, preventing system overreaction to momentary spikes (e.g., a motor starting).
 
-4. Real-Time Visualization & Logging
+   Peak Alerts: Triggers a "Peak Mode" warning if demand exceeds 9.0 kW, allowing for manual or automated load shedding.
 
-   Built on the Streamlit web framework, the dashboard provides a live energy "cockpit":
+⚙️ Configuration
 
-   Instant Metrics: Real-time kW usage displayed via high-visibility cards.
+The system parameters can be adjusted within the config.py (or top-level constants) to match your specific hardware:
 
-   Trend Tracking: Live line charts illustrating solar production vs. grid consumption.
+BATTERY_UPPER_LIMIT: Default 40% (Start using battery).
 
-   Audit Trail: Persistent logging of every system decision, exportable via CSV for monthly energy audits.
+BATTERY_LOWER_LIMIT: Default 35% (Stop using battery).
 
-System Architecture
+MAX_GRID_THRESHOLD: Default 9.0 kW (Peak alarm trigger).
 
-   1. Data Acquisition Layer (The Sensors)
+SMOOTHING_WINDOW: Number of data points for the rolling average.
 
-      This is the entry point of the system.
+📊 Technical Specifications
 
-      Inputs: It gathers three primary data streams: Household Demand (kW), Solar Generation (kW), and Battery State of Charge (%).
+The logic is governed by the following energy balance equation
 
-      Simulation vs. Reality: In this version, we use a random generator, but the architecture is designed to easily plug into MQTT, Modbus, or REST APIs from smart meters.
+$$P_{grid} = P_{demand} - (P_{solar} + P_{battery})$$
 
-    2. Processing & Logic Layer (The Brain)
-   
-      This is where the raw data is transformed into decisions.
+Where:
 
-   Smoothing: A deque (double-ended queue) creates a rolling average of demand to prevent the system from overreacting to a 1-second spike (like a toaster clicking on).
+$P_{solar}$ is prioritized until $P_{solar} \ge P_{demand}$.
 
-      Hysteresis Controller: A state-machine that manages the battery. It uses "Upper" and "Lower" bounds to create a deadband, preventing rapid switching cycles that damage hardware.
+$P_{battery}$ is only available if $SoC > Threshold_{Hysteresis}$.
 
-      Resource Allocator: A priority-based algorithm that mathematically distributes loads across the three power sources.
+$P_{grid}$ is the remainder, ensuring the load is always met.
 
-   3. Storage & Persistence Layer (The Memory)
-   
-      CSV Logger: Every decision cycle is serialized into a CSV format. This ensures that even if the power fails, the historical data is preserved for long-term analysis.
+📝 Future Roadmap
 
-      Thread Safety: A threading.Lock mechanism ensures that the background logic can write to the data state while the UI reads from it without causing a system crash.
+ Machine Learning: Predict solar generation based on weather API data.
 
-   5. Presentation Layer (The Cockpit)
-   
-      Built on Streamlit, this layer decouples the "Logic" from the "View."
+ Multi-Battery Support: Manage multiple battery banks with independent health stats.
 
-      Web Server: Streamlit runs a local web server that renders Python logic into HTML/JavaScript.
-
-      Reactive UI: The dashboard uses a "Rerun" trigger to update the UI every time the simulation advances, providing the user with real-time feedback.
+IoT Expansion: Native integration with smart plugs for automated non-essential load shedding.
