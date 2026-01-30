@@ -39,4 +39,37 @@ Key Functions
    Trend Tracking: Live line charts illustrating solar production vs. grid consumption.
 
    Audit Trail: Persistent logging of every system decision, exportable via CSV for monthly energy audits.
+
+System Architecture
+
+   1. Data Acquisition Layer (The Sensors)
+
+      This is the entry point of the system.
+
+      Inputs: It gathers three primary data streams: Household Demand (kW), Solar Generation (kW), and Battery State of Charge (%).
+
+      Simulation vs. Reality: In this version, we use a random generator, but the architecture is designed to easily plug into MQTT, Modbus, or REST APIs from smart meters.
+
+    2. Processing & Logic Layer (The Brain)
    
+      This is where the raw data is transformed into decisions.
+
+   Smoothing: A deque (double-ended queue) creates a rolling average of demand to prevent the system from overreacting to a 1-second spike (like a toaster clicking on).
+
+      Hysteresis Controller: A state-machine that manages the battery. It uses "Upper" and "Lower" bounds to create a deadband, preventing rapid switching cycles that damage hardware.
+
+      Resource Allocator: A priority-based algorithm that mathematically distributes loads across the three power sources.
+
+   3. Storage & Persistence Layer (The Memory)
+   
+      CSV Logger: Every decision cycle is serialized into a CSV format. This ensures that even if the power fails, the historical data is preserved for long-term analysis.
+
+      Thread Safety: A threading.Lock mechanism ensures that the background logic can write to the data state while the UI reads from it without causing a system crash.
+
+   5. Presentation Layer (The Cockpit)
+   
+      Built on Streamlit, this layer decouples the "Logic" from the "View."
+
+      Web Server: Streamlit runs a local web server that renders Python logic into HTML/JavaScript.
+
+      Reactive UI: The dashboard uses a "Rerun" trigger to update the UI every time the simulation advances, providing the user with real-time feedback.
